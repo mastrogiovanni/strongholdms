@@ -1,0 +1,13 @@
+[package]
+name = "strongholdms"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iota_stronghold         = { git = "https://github.com/iotaledger/stronghold.rs", branch = "dev-refactor" }
+base64                  = { version = "0.13.0" }
+iota-crypto             = { version = "0.8.0", features = [ "aes", "aes-kw", "random", "ed25519", "sha", "hmac", "bip39-en", "bip39-jp", "slip10", "chacha", "x25519" ] }
+actix-web               = "4"
+
