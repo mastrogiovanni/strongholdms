@@ -53,7 +53,7 @@ fn load_from_snapshot(client_id: String, snapshot_path: String, passphrase: Stri
 
     // println!(r#"Public key is "{}" (Base64)"#, base64::encode(output));
 
-    return base64::encode(output);
+    base64::encode(output)
 }
 
 fn save_to_snapshot(client_id: String, snapshot_path: String, passphrase: String) -> String {
@@ -116,7 +116,6 @@ fn save_to_snapshot(client_id: String, snapshot_path: String, passphrase: String
     );
 
     base64::encode(output)
-
 }
 
 #[get("/load/{client_id}/{snapshot_path}/{passphrase}")]
