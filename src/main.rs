@@ -6,17 +6,8 @@ use stronghold::{
     procedures::{
         GenerateKey, KeyType, StrongholdProcedure, 
     },
-    /*
-    procedures::{
-        BIP39Generate, Chain, GenerateKey, KeyType, MnemonicLanguage, Slip10Derive, Slip10DeriveInput, Slip10Generate,
-        StrongholdProcedure,
-    },
-    Client, ClientError, ClientVault, KeyProvider, Location, , Store, Stronghold,
-    */
     Stronghold, Location, SnapshotPath, KeyProvider
 };
-
-// use stronghold::client::Client;
 
 /// Calculates the Blake2b from a String
 fn hash_blake2b(input: String) -> Vec<u8> {
@@ -28,11 +19,9 @@ fn hash_blake2b(input: String) -> Vec<u8> {
 fn load_from_snapshot(client_id: String, snapshot_path: String, passphrase: String) -> String {
 
     let client_path = client_id.as_bytes().to_vec();
-
     let record_path = "record_path/pippo";
-
     let value_path = "value_path/pluto";
-    // let keytype = KeyType::Ed25519;
+    let keytype = KeyType::Ed25519;
 
     let stronghold = Stronghold::default();
     let snapshot_path = SnapshotPath::from_path(snapshot_path);
@@ -49,7 +38,7 @@ fn load_from_snapshot(client_id: String, snapshot_path: String, passphrase: Stri
 
     // get the public key
     let public_key_procedure = stronghold::procedures::PublicKey {
-        ty: KeyType::Ed25519,
+        ty: keytype.clone(),
         private_key: Location::Generic {
             record_path: record_path.as_bytes().to_vec(),
             vault_path: value_path.as_bytes().to_vec(),
@@ -131,14 +120,14 @@ fn save_to_snapshot(client_id: String, snapshot_path: String, passphrase: String
 }
 
 #[get("/load/{client_id}/{snapshot_path}/{passphrase}")]
-async fn generate_key(path: web::Path<(String, String, String)>) -> Result<String> {
+async fn load_key(path: web::Path<(String, String, String)>) -> Result<String> {
     let (client_id, snapshot_path, passphrase) = path.into_inner();
     let public_key = load_from_snapshot(client_id, snapshot_path, passphrase);
     Ok(public_key)
 }
 
 #[get("/save/{client_id}/{snapshot_path}/{passphrase}")]
-async fn healthcheck(path: web::Path<(String, String, String)>) -> Result<String> {
+async fn save_key(path: web::Path<(String, String, String)>) -> Result<String> {
     let (client_id, snapshot_path, passphrase) = path.into_inner();
     let public_key = save_to_snapshot(client_id, snapshot_path, passphrase);
     Ok(public_key)
@@ -147,8 +136,8 @@ async fn healthcheck(path: web::Path<(String, String, String)>) -> Result<String
 pub fn init(config: &mut web::ServiceConfig) {
     config.service(
         web::scope("")
-            .service(generate_key)
-            .service(healthcheck)
+            .service(load_key)
+            .service(save_key)
     );
 }
 
@@ -162,13 +151,3 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
-
-/*
-fn main() {
-
-    // alter_main();
-    
-    real_main();
-
-}
-*/
